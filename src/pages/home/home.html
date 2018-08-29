@@ -7,10 +7,13 @@
 </ion-header>
 
 <ion-content>
-    <ion-item-group *ngFor="let element of categories">
-      <ion-item-divider color="light">{{element.name}}</ion-item-divider>
-      <button ion-item *ngFor="let item of element.hashtags" (click)="itemSelected(item)">
+  <button ion-button (click)="onBtn()">Click me</button>
+  <div *ngIf="true">
+    <ion-item-group *ngFor="let element of main; let i = index;">
+      <ion-item-divider color="light">{{element}}</ion-item-divider>
+      <button ion-item *ngFor="let item of sub[i]; let j = index;" (click)="onClick(i,j)">
         {{ item }}
       </button>
     </ion-item-group>
+  </div>
 </ion-content>

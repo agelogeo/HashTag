@@ -14,6 +14,16 @@ import {Clipboard} from "@ionic-native/clipboard";
 import {GooglePlus} from "@ionic-native/google-plus";
 import {AdMobFree} from "@ionic-native/admob-free";
 
+import firebase from "firebase";
+import {myList} from "../services/list";
+var config = {
+  
+};
+firebase.initializeApp(config);
+
+// Get a reference to the database service
+var database = firebase.database();
+
 @NgModule({
   declarations: [
     MyApp,
@@ -37,6 +47,7 @@ import {AdMobFree} from "@ionic-native/admob-free";
     Clipboard,
     GooglePlus,
     AdMobFree,
+    myList,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
