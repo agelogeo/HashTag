@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {List, NavController, ToastController} from 'ionic-angular';
+import {List, LoadingController, NavController, ToastController} from 'ionic-angular';
 import firebase from 'firebase';
 import {myList} from "../../services/list";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'page-home',
@@ -12,12 +13,33 @@ export class HomePage {
   sub :any;
   main : any;
   hashtags : any;
-
+  loading : any;
   flag = false;
 
-  constructor(public navCtrl: NavController,public mL:myList, public toastCtrl : ToastController) {
+  constructor(public navCtrl: NavController,public mL:myList, public toastCtrl : ToastController,public loadingCtrl:LoadingController) {
+    this.presentLoadingDefault();
+    this.getMain(this.mL);
 
-    this.getMain(mL);
+  }
+
+
+  presentLoadingDefault() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+
+    this.loading.present();
+
+  }
+
+
+
+  onClick(i : number, j: number){
+    const toast = this.toastCtrl.create({
+      message: this.mL.hashtags[i][j],
+      duration: 3000
+    });
+    toast.present();
   }
 
   getMain(mL:myList){
@@ -30,9 +52,12 @@ export class HomePage {
         returnArr.push(item);
       });
       console.log(returnArr);
-      mL.main = returnArr;
+
+      mL.main=returnArr;
       return returnArr;
     });
+
+    //console.log('helloo '+this.main);
 
     firebase.database().ref('root/sub').on('value', function(snapshot) {
       var returnArr = [];
@@ -47,6 +72,7 @@ export class HomePage {
       return returnArr;
     });
 
+
     firebase.database().ref('root/hashtags').on('value', function(snapshot) {
       var returnArr = [];
 
@@ -59,25 +85,9 @@ export class HomePage {
       mL.hashtags = returnArr;
       return returnArr;
     });
+
+    this.loading.dismiss();
+    return;
   }
-
-  onClick(i : number, j: number){
-    const toast = this.toastCtrl.create({
-      message: this.hashtags[i][j],
-      duration: 3000
-    });
-    toast.present();
-  }
-
-  onBtn(){
-    this.flag=true;
-    //console.log(this.mL.sub[0][0]);
-    this.main = this.mL.main;
-    this.sub = this.mL.sub;
-    this.hashtags = this.mL.hashtags;
-
-  }
-
-
 
 }
