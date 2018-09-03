@@ -5,6 +5,6 @@ export class myList {
   main : any;
   sub : any;
   hashtags : any;
-
+  isDataAvailable : boolean = false;
 
 }

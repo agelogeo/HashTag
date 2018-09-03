@@ -17,7 +17,7 @@ import {AdMobFree} from "@ionic-native/admob-free";
 import firebase from "firebase";
 import {myList} from "../services/list";
 var config = {
- 
+  
 };
 firebase.initializeApp(config);
 
