@@ -21,7 +21,7 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
-$toolbar-background: #056a7f;
+$toolbar-background: #aa1f78;
 //$text-color: #FFFFFF;
 $menu-width : 200px;
 
@@ -36,13 +36,13 @@ $menu-width : 200px;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: #125688,
-  secondary:  #1b8dd7,
+  primary: #aa1f78,
+  secondary: #db219f,
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #222,
   oldBlue:    #2f8fff,
-  navyBlue:   #0f6491,
+  navyBlue:   #aa1f78,
   menuBackground: #474747,
   menuText : #f4f4f4,
   menuHeader : #ca493a,

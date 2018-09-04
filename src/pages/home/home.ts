@@ -8,6 +8,7 @@ import {
   AdMobFreeInterstitialConfig,
   AdMobFreeRewardVideoConfig
 } from "@ionic-native/admob-free";
+import {Clipboard} from "@ionic-native/clipboard";
 
 @Component({
   selector: 'page-home',
@@ -23,27 +24,31 @@ export class HomePage implements OnInit{
   flag = false;
 
   // REWARDS
-  // M id : ca-app-pub-4781041300358039/4943879735
-  //rewardId:string = 'ca-app-pub-4781041300358039/4943879735';
+  // M id : ca-app-pub-4781041300358039/1144485857
+  //rewardId:string = 'ca-app-pub-4781041300358039/1144485857';
   // T id : ca-app-pub-3940256099942544/5224354917
-  rewardId:string = 'ca-app-pub-3940256099942544/5224354917';
+  rewardId:string = 'ca-app-pub-4781041300358039/1144485857';
 
   // BANNERS
-  // M id : ca-app-pub-4781041300358039/8018154694
-  //bannerId:string = 'ca-app-pub-4781041300358039/8018154694';
+  // M id : ca-app-pub-4781041300358039/4728507642
+  //bannerId:string = 'ca-app-pub-4781041300358039/4728507642';
   // T id : ca-app-pub-3940256099942544/6300978111
-  bannerId:string = 'ca-app-pub-3940256099942544/6300978111';
+  bannerId:string = 'ca-app-pub-4781041300358039/4728507642';
 
-  interId:string = 'ca-app-pub-3940256099942544/1033173712';
+  // M id: ca-app-pub-4781041300358039/6943607442
+  // T id : ca-app-pub-3940256099942544/1033173712
+  interId:string = 'ca-app-pub-4781041300358039/6943607442';
 
   testing:boolean = false;
-  isAdReady:boolean = false;
+  isRewardReady:boolean = false;
+  isInterstitialReady:boolean = false;
+  isRunningReward : boolean  = false;
   i : number = 0;
   j : number = 0;
 
 
-  constructor(
-    public admobFree: AdMobFree,public navCtrl: NavController,public mL:myList, public toastCtrl : ToastController,public loadingCtrl:LoadingController) {
+  constructor(private clipboard: Clipboard,public admobFree: AdMobFree, public navCtrl: NavController,
+              public mL:myList, public toastCtrl : ToastController,public loadingCtrl:LoadingController) {
     this.presentLoadingDefault();
 
     const interConfig: AdMobFreeInterstitialConfig = {
@@ -64,33 +69,28 @@ export class HomePage implements OnInit{
     };
     this.admobFree.rewardVideo.config(videoConfig);
 
-    this.prepare();
-    this.prepareInter();
+    this.admobFree.rewardVideo.prepare();
+    this.admobFree.interstitial.prepare();
     this.showBannerAd();
+
+    this.admobFree.on(this.admobFree.events.INTERSTITIAL_LOAD).subscribe(() => this.isInterstitialReady = true);
+
+    this.admobFree.on(this.admobFree.events.INTERSTITIAL_LOAD_FAIL).subscribe(() => this.isInterstitialReady = false);
+
+    this.admobFree.on(this.admobFree.events.INTERSTITIAL_CLOSE).subscribe(() => {
+      this.getHashtag();
+      this.admobFree.interstitial.prepare();
+    });
 
     this.admobFree.on(this.admobFree.events.REWARD_VIDEO_REWARD).subscribe(() => {
       this.admobFree.interstitial.show();
-      this.loading.dismiss();
       this.getHashtag();
-
     });
 
-    this.admobFree.on(this.admobFree.events.REWARD_VIDEO_CLOSE).subscribe(() => {
-      this.presentLoadingDefault();
-      this.prepare();
-
-
-    });
+    this.admobFree.on(this.admobFree.events.REWARD_VIDEO_CLOSE).subscribe(() => this.admobFree.rewardVideo.prepare());
 
     this.admobFree.on(this.admobFree.events.REWARD_VIDEO_LOAD).subscribe(() => {
-      const toast = this.toastCtrl.create({
-        message: 'Video loaded.',
-        position: 'bottom',
-        duration: 1000
-      });
-      toast.present();
-      this.loading.dismiss();
-      this.prepareInter();
+      this.isRewardReady = true;
     });
 
     this.admobFree.on(this.admobFree.events.REWARD_VIDEO_LOAD_FAIL).subscribe(() => {
@@ -98,38 +98,57 @@ export class HomePage implements OnInit{
         message: 'Please try again later.',
         showCloseButton: true,
         closeButtonText: 'Ok',
-        duration: 2000
+        duration: 2000,
+        position : 'top'
       });
       toast.present();
-      this.loading.dismiss();
-    });
-  }
-
-  prepare(){
-
-    this.admobFree.rewardVideo.prepare().then(() => {
-
-      setTimeout(() => {
-        //console.log('Test');
-        this.loading.dismiss();
-      }, 5000);
-
-    });
-  }
-
-
-  presentLoadingDefault() {
-    this.loading = this.loadingCtrl.create({
-      content: 'Please wait...'
+      this.isRewardReady = false;
     });
 
-    this.loading.present();
 
   }
 
-  ngOnInit(){
-    this.getMain();
+  onClick(i : number, j: number){
+    this.i = i;
+    this.j = j;
+    if(this.isRewardReady){
+      this.isRunningReward = true;
+      this.admobFree.rewardVideo.show();
+    }else{
+      this.admobFree.rewardVideo.prepare();
+      if(this.isInterstitialReady){
+        this.isRunningReward = false;
+        this.admobFree.interstitial.show();
+      }else{
+       /* const toast3 = this.toastCtrl.create({
+          message: 'Please try again later.',
+          showCloseButton: true,
+          closeButtonText: 'Ok',
+          duration: 2000
+        });
+        toast3.present();*/
+        this.admobFree.interstitial.prepare();
+      }
+    }
 
+  }
+
+  getHashtag(){
+    firebase.database().ref('root/hashtags/'+this.i+'/'+this.j).on('value', (snapshot) => {
+
+      console.log(snapshot.val());
+      this.hashtag = snapshot.val();
+
+      this.clipboard.copy(this.hashtag).then(() =>{
+        const toast2 = this.toastCtrl.create({
+          message: 'We copied '+this.sub[this.i][this.j]+' hashtags on your clipboard.',
+          showCloseButton : true,
+          closeButtonText : 'Thanks',
+          position : 'bottom'
+        });
+        toast2.present();
+      });
+    });
   }
 
   getMain(){
@@ -157,35 +176,9 @@ export class HomePage implements OnInit{
       });
       console.log(returnArr);
       this.sub = returnArr;
+      this.loading.dismiss();
     });
 
-
-
-
-
-  }
-
-  onClick(i : number, j: number){
-    this.i = i;
-    this.j = j;
-
-    this.admobFree.rewardVideo.show();
-
-  }
-
-  getHashtag(){
-    firebase.database().ref('root/hashtags/'+this.i+'/'+this.j).on('value', (snapshot) => {
-
-      console.log(snapshot.val());
-      this.hashtag = snapshot.val();
-
-      const toast = this.toastCtrl.create({
-        message: this.hashtag,
-        duration: 3000,
-        position : 'top'
-      });
-      toast.present();
-    });
   }
 
   showBannerAd(){
@@ -202,13 +195,17 @@ export class HomePage implements OnInit{
     })
   }
 
-  prepareInter(){
-    this.admobFree.interstitial.prepare();
+  presentLoadingDefault() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+
+    this.loading.present();
+
   }
 
-
-
-
-
+  ngOnInit(){
+    this.getMain();
+  }
 
 }

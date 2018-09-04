@@ -9,7 +9,7 @@
 <ion-content>
     <ion-item-group  *ngFor="let element of main; let i = index;">
       <ion-item-divider color="light">{{element}}</ion-item-divider>
-      <button ion-item *ngFor="let item of sub[i]; let j = index;" (click)="onClick(i,j)">
+      <button ion-item *ngFor="let item of sub[i]; let j = index;" (click)="onClick(i,j)" [disabled]="!isInterstitialReady && !isRewardReady">
         {{ item }}
       </button>
     </ion-item-group>
