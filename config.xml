@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.agelogeo.hashtag" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.agelogeo.hashtag" version="20.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>HashMania - Hashtags</name>
-    <description>An awesome Hashmania for instagram hashtags..</description>
+    <description>An awesome Hashmania for instagram hashtags.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Agelogeo</author>
     <content src="index.html" />
     <access origin="*" />
@@ -79,7 +79,8 @@
     <plugin name="cordova-plugin-googleplus" spec="^5.3.0">
         <variable name="REVERSED_CLIENT_ID" value="hashtag.agelogeo.com" />
     </plugin>
-    <plugin name="cordova-plugin-admob-free" spec="^0.18.0">
+    <plugin name="cordova-plugin-admob-free" spec="0.21.0">
+        <variable name="ADMOB_APP_ID" value="ca-app-pub-4781041300358039~6233161004" />
     </plugin>
     <engine name="android" spec="6.4.0" />
 </widget>

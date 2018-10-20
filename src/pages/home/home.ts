@@ -14,7 +14,7 @@ import {Clipboard} from "@ionic-native/clipboard";
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage implements OnInit{
+export class HomePage {
 
   sub :any;
   main : any;
@@ -120,13 +120,13 @@ export class HomePage implements OnInit{
         this.isRunningReward = false;
         this.admobFree.interstitial.show();
       }else{
-       /* const toast3 = this.toastCtrl.create({
+       const toast3 = this.toastCtrl.create({
           message: 'Please try again later.',
           showCloseButton: true,
           closeButtonText: 'Ok',
           duration: 2000
         });
-        toast3.present();*/
+        toast3.present();
         this.admobFree.interstitial.prepare();
       }
     }
@@ -204,7 +204,7 @@ export class HomePage implements OnInit{
 
   }
 
-  ngOnInit(){
+  ionViewWillEnter(){
     this.getMain();
   }
 
