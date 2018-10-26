@@ -21,7 +21,7 @@ export class HomePage {
   hashtags : any;
   hashtag : any;
   loading : any;
-  flag = false;
+  flag :number = 0;
 
   // REWARDS
   // M id : ca-app-pub-4781041300358039/1144485857
@@ -69,8 +69,8 @@ export class HomePage {
     };
     this.admobFree.rewardVideo.config(videoConfig);
 
-    this.admobFree.rewardVideo.prepare();
-    this.admobFree.interstitial.prepare();
+    this.admobFree.rewardVideo.prepare().then();
+    this.admobFree.interstitial.prepare().then();
     this.showBannerAd();
 
     this.admobFree.on(this.admobFree.events.INTERSTITIAL_LOAD).subscribe(() => this.isInterstitialReady = true);
@@ -152,6 +152,7 @@ export class HomePage {
   }
 
   getMain(){
+
     firebase.database().ref('root/main').on('value', (snapshot) => {
       var returnArr = [];
 
@@ -161,7 +162,6 @@ export class HomePage {
         returnArr.push(item);
       });
       console.log(returnArr);
-
       this.main = returnArr;
     });
 
@@ -206,6 +206,14 @@ export class HomePage {
 
   ionViewWillEnter(){
     this.getMain();
+  }
+
+  isRewardVideoReady(){
+    return this.isRewardReady;
+  }
+
+  isInterstitialAdReady(){
+    return this.isInterstitialReady;
   }
 
 }
